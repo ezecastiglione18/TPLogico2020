@@ -86,13 +86,18 @@ cambiaDeRegion(UnaZona, OtraZona):-
 
 % Punto 7
 
-cantidadDeRegiones(Camino, CantidadDeRegiones):-
-    % Tengo que conseguir una lista de regiones
+cantidadDeRegiones(Camino, Cantidad) :-
+    findall(Region, regionDe(Camino, Region), Regiones),
     list_to_set(Regiones, RegionesSinRepetidos),
-    length(RegionesSinRepetidos, CantidadDeRegiones).
+    length(RegionesSinRepetidos, Cantidad).
 
- todosLosCaminosConducenAMordor(Camino|Resto):-
+regionDe(Camino, Region) :-
+    member(Zona, Camino),
+    zona(Zona, Region).
+
+ todosLosCaminosConducenAMordor(Camino|Resto) :-
     last(Camino, UltimaZona),
     zona(UltimaZona, mordor),
     todosLosCaminosConducenAMordor(Resto).
 
+todosLosCaminosConducenAMordor([]).

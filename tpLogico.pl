@@ -87,7 +87,7 @@ cambiaDeRegion(UnaZona, OtraZona):-
 % Punto 7
 
 cantidadDeRegiones(Camino, CantidadDeRegiones):-
-    findall(Region, regionDe(Camino, Region), Regiones), % Tengo que conseguir una lista de regiones
+    % Tengo que conseguir una lista de regiones
     list_to_set(Regiones, RegionesSinRepetidos),
     length(RegionesSinRepetidos, CantidadDeRegiones).
 

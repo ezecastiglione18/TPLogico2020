@@ -25,10 +25,10 @@ zonasLimitrofes(lothlorien, edoras).
 zonasLimitrofes(edoras, minasTirith).
 zonasLimitrofes(minasTirith, minasMorgul).
 
-zonasLimitrofes(Zona1, Zona2) :-
+zonasLimitrofes(Zona1, Zona2):-
     mismaRegion(Zona1, Zona2), Zona1 \= Zona2.
 
-mismaRegion(Zona1, Zona2) :-
+mismaRegion(Zona1, Zona2):-
     zona(Zona1, Region), zona(Zona2, Region).
 
 sonZonasLimitrofes(Zona1, Zona2):-
@@ -39,19 +39,19 @@ sonZonasLimitrofes(Zona1, Zona2):-
 
 %Punto4
 
-regionesLimitrofes(UnaRegion,OtraRegion) :-
+regionesLimitrofes(UnaRegion,OtraRegion):-
     zona(UnaZona,UnaRegion),
     zona(OtraZona,OtraRegion),
     sonZonasLimitrofes(UnaZona,OtraZona),
     UnaRegion \= OtraRegion.
 
-regionesLejanas(UnaRegion,OtraRegion) :-
+regionesLejanas(UnaRegion,OtraRegion):-
     zona(_,UnaRegion),
     zona(_,OtraRegion),
     not(regionesLimitrofes(UnaRegion,OtraRegion)),
     not(hayRegionLimitrofeEntre(UnaRegion,OtraRegion)).
 
-hayRegionLimitrofeEntre(UnaRegion,OtraRegion) :-
+hayRegionLimitrofeEntre(UnaRegion,OtraRegion):-
     regionesLimitrofes(UnaRegion,UnaRegionIntermedia),
     regionesLimitrofes(OtraRegion,UnaRegionIntermedia).
 
@@ -67,35 +67,35 @@ sonConsecutivos(UnCamino,OtroCamino):-
 
 % Punto 6
 
-tieneLogica([Zona,ZonaSiguiente|RestoDeZonas]) :-
+tieneLogica([Zona,ZonaSiguiente|RestoDeZonas]):-
     sonZonasLimitrofes(Zona, ZonaSiguiente),
     tieneLogica([ZonaSiguiente|RestoDeZonas]).
 
-esSeguro([Zona,ZonaSiguiente|RestoDeZonas]) :-
+esSeguro([Zona,ZonaSiguiente|RestoDeZonas]):-
     cambiaDeRegion(Zona, ZonaSiguiente),
     esSeguro(RestoDeZonas).
 
-esSeguro([_,Zona,ZonaSiguiente|RestoDeZonas]) :-
+esSeguro([_,Zona,ZonaSiguiente|RestoDeZonas]):-
     cambiaDeRegion(Zona, ZonaSiguiente),
     esSeguro(RestoDeZonas).
 
-cambiaDeRegion(UnaZona, OtraZona) :-
+cambiaDeRegion(UnaZona, OtraZona):-
     zona(UnaZona,UnaRegion),
     zona(OtraZona,OtraRegion),
     UnaRegion \= OtraRegion.
 
 % Punto 7
 
-cantidadDeRegiones(Camino, Cantidad) :-
+cantidadDeRegiones(Camino, Cantidad):-
     findall(Region, regionDe(Camino, Region), Regiones),
     list_to_set(Regiones, RegionesSinRepetidos),
     length(RegionesSinRepetidos, Cantidad).
 
-regionDe(Camino, Region) :-
+regionDe(Camino, Region):-
     member(Zona, Camino),
     zona(Zona, Region).
 
- todosLosCaminosConducenAMordor(Camino|Resto) :-
+ todosLosCaminosConducenAMordor(Camino|Resto):-
     last(Camino, UltimaZona),
     zona(UltimaZona, mordor),
     todosLosCaminosConducenAMordor(Resto).
@@ -104,75 +104,62 @@ todosLosCaminosConducenAMordor([]).
 
 % Punto 8
 
-% viajero(NOMBRE, tipo)
+% viajero(Nombre, Raza, armas([arma(nivel)])
+% Raza: maiar(nivel, nivelMagico)
+% Raza: hobbit(edad)
+% Raza: ent(edad)
 
-% TIPO: maiar(nivel, poderMagico)
+viajero(gandalf,    maiar(25, 260), armas(  [baston                 ]   )).
 
-viajero(gandalf, maiar(25, 260)).
+viajero(legolas,    elfo,           armas(  [arco(29), espada(20)   ]   )).
+viajero(gimli,      enano,          armas(  [hacha(26)              ]   )).
+viajero(aragorn,    dunedain,       armas(  [espada(30)             ]   )).
+viajero(boromir,    hombre,         armas(  [espada(26)             ]   )).
+viajero(gorbag,     orco,           armas(  [ballesta(24)           ]   )).
+viajero(ugluk,      urukhai,        armas(  [espada(26), arco(22)   ]   )).
 
-% TIPO: guerrero(raza, armas(Arma, nivelManejo))
-
-viajero(legolas, guerrero(elfo, ([(arco, 29), (espada, 20)]))).
-viajero(gimli, guerrero(enano, ([hacha, 26]))).
-viajero(aragorn, guerrero(dunedain, ([espada, 30]))).
-viajero(boromir, guerrero(hombre, ([espada, 26]))).
-viajero(gorbag, guerrero(orco, ([ballesta, 24]))).
-viajero(ugluk, guerrero(urukhai, ([(espada, 26), (arco,22)]))).
-
-% TIPO: pacifista(raza, edad)
-
-viajero(frodo, pacifista(hobbit, 51)).
-viajero(sam, pacifista(hobbit, 36)).
-viajero(barbol, pacifista(ent, 5300)).
+viajero(frodo,      hobbit(51),     armas(  [espadaCorta            ]   )).
+viajero(sam,        hobbit(36),     armas(  [daga                   ]   )).
+viajero(barbol,     ent(5300),      armas(  [fuerza                 ]   )).
 
 % Punto 9
 
-% raza(viajero, suRaza)
+raza(Nombre, Tipo) :-
+    viajero(Nombre, Raza, _),
+    tipoDeRaza(Raza, Tipo).
 
-%raza(gandalf, maiar).
-%raza(legolas, elfo).
-%raza(gimli, enano).
-%raza(aragorn, dunedain).
-%raza(boromir, hombre).
-%raza(gorbag, orco).
-%raza(ugluk, urukhai).
-%raza(frodo, hobbit).
-%raza(sam, hobbit).
-%raza(barbol, ent).
+tipoDeRaza(elfo,        guerrera).
+tipoDeRaza(enano,       guerrera).
+tipoDeRaza(dunedain,    guerrera).
+tipoDeRaza(hombre,      guerrera).
+tipoDeRaza(orco,        guerrera).
+tipoDeRaza(urukhai,     guerrera).
+tipoDeRaza(maiar(_,_),  maiar).
+tipoDeRaza(hobbit(_),   pacifista).
+tipoDeRaza(ent(_),      pacifista).
 
-raza(Viajero, Raza):-
-    viajero(Viajero, _, (Raza, _)).
+armas(Nombre, Armas) :-
+    viajero(Nombre, _, armas(Armas)).
 
-% arma(viajero, suArma)
-
-arma(gandalf, baston).
-arma(legolas, arco).
-arma(legolas, espada).
-arma(gimli, hacha).
-arma(aragorn, espada).
-arma(boromir, espada).
-arma(gorbag, ballesta).
-arma(ugluk, espada).
-arma(ugluk, arco).
-arma(frodo, espadaCorta).
-arma(sam, daga).
-arma(barbol, fuerza).
-
-% nivel(viajero, suNivel)
-
-%nivel(gandalf, 25).
-%nivel(legolas, 29).
-%nivel(gimli, 26).
-%nivel(aragorn, 30).
-%nivel(boromir, 26).
-%nivel(gorbag, 24).
-%nivel(ugluk, 26).
-
-nivel(Viajero, Nivel):-
-    viajero(Viajero, pacifista(hobbit, Edad)),
+nivel(Nombre, Nivel) :-
+    viajero(Nombre, hobbit(Edad), _),
     Nivel is Edad / 3.
 
-nivel(Viajero, Nivel):-
-    viajero(Viajero, pacifista(ent, Edad)),
+nivel(Nombre, Nivel) :-
+    viajero(Nombre, ent(Edad), _),
     Nivel is Edad / 100.
 
+nivel(Nombre, Nivel) :-
+    raza(Nombre, guerrera),
+    armas(Nombre, Armas),
+    findall(NivelArma, nivelArmas(Armas, NivelArma), NivelesArmas),
+    max_member(Nivel, NivelesArmas).
+
+nivelArmas(Armas, Nivel) :-
+    member(Arma, Armas),
+    nivelDelArma(Arma, Nivel).
+
+nivelDelArma(arco(Nivel), Nivel).
+nivelDelArma(hacha(Nivel), Nivel).
+nivelDelArma(espada(Nivel), Nivel).
+nivelDelArma(ballesta(Nivel), Nivel).

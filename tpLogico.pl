@@ -67,17 +67,23 @@ sonConsecutivos(UnCamino,OtroCamino):-
 
 % Punto 6
 
-tieneLogica([Zona,ZonaSiguiente|RestoDeZonas]):-
+tieneLogica([Zona, ZonaSiguiente|RestoDeZonas]):-
     sonZonasLimitrofes(Zona, ZonaSiguiente),
     tieneLogica([ZonaSiguiente|RestoDeZonas]).
 
-esSeguro([Zona,ZonaSiguiente|RestoDeZonas]):-
+tieneLogica([Zona, ZonaSiguiente]):-
+    sonZonasLimitrofes(Zona, ZonaSiguiente).
+
+esSeguro([Zona, ZonaSiguiente|RestoDeZonas]):-
     cambiaDeRegion(Zona, ZonaSiguiente),
     esSeguro(RestoDeZonas).
 
-esSeguro([_,Zona,ZonaSiguiente|RestoDeZonas]):-
+esSeguro([_, Zona, ZonaSiguiente|RestoDeZonas]):-
     cambiaDeRegion(Zona, ZonaSiguiente),
     esSeguro(RestoDeZonas).
+
+esSeguro([Zona, ZonaSiguiente]):-
+    cambiaDeRegion(Zona, ZonaSiguiente).
 
 cambiaDeRegion(UnaZona, OtraZona):-
     zona(UnaZona,UnaRegion),
@@ -95,12 +101,14 @@ regionDe(Camino, Region):-
     member(Zona, Camino),
     zona(Zona, Region).
 
- todosLosCaminosConducenAMordor(Camino|Resto):-
+ todosLosCaminosConducenAMordor([Camino|Resto]):-
     last(Camino, UltimaZona),
     zona(UltimaZona, mordor),
     todosLosCaminosConducenAMordor(Resto).
 
-todosLosCaminosConducenAMordor([]).
+todosLosCaminosConducenAMordor([Camino]):-
+    last(Camino, UltimaZona),
+    zona(UltimaZona, mordor).
 
 % Punto 8
 

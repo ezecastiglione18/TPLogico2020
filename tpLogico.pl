@@ -148,6 +148,9 @@ tipoDeRaza(ent(_),      pacifista).
 
 armas(Nombre, Armas) :-
     viajero(Nombre, _, armas(Armas)).
+    
+nivel(Nombre, Nivel) :-
+    viajero(gandalf, maiar(Nivel, 260), _).
 
 nivel(Nombre, Nivel) :-
     viajero(Nombre, hobbit(Edad), _),

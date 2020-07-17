@@ -67,22 +67,22 @@ sonConsecutivos(UnCamino,OtroCamino):-
 
 % Punto 6
 
-tieneLogica([Zona|ZonaSiguiente|RestoDeZonas]):-
+tieneLogica([Zona,ZonaSiguiente|RestoDeZonas]) :-
     sonZonasLimitrofes(Zona, ZonaSiguiente),
     tieneLogica([ZonaSiguiente|RestoDeZonas]).
 
-esSeguro([Zona|ZonaSiguiente|RestoDeZonas]):-
+esSeguro([Zona,ZonaSiguiente|RestoDeZonas]) :-
     cambiaDeRegion(Zona, ZonaSiguiente),
     esSeguro(RestoDeZonas).
 
-esSeguro([_|Zona|ZonaSiguiente|RestoDeZonas]):-
+esSeguro([_,Zona,ZonaSiguiente|RestoDeZonas]) :-
     cambiaDeRegion(Zona, ZonaSiguiente),
     esSeguro(RestoDeZonas).
 
-cambiaDeRegion(UnaZona, OtraZona):-
+cambiaDeRegion(UnaZona, OtraZona) :-
     zona(UnaZona,UnaRegion),
     zona(OtraZona,OtraRegion),
-    UnaRegion \= OtraRegion
+    UnaRegion \= OtraRegion.
 
 % Punto 7
 
@@ -101,3 +101,78 @@ regionDe(Camino, Region) :-
     todosLosCaminosConducenAMordor(Resto).
 
 todosLosCaminosConducenAMordor([]).
+
+% Punto 8
+
+% viajero(NOMBRE, tipo)
+
+% TIPO: maiar(nivel, poderMagico)
+
+viajero(gandalf, maiar(25, 260)).
+
+% TIPO: guerrero(raza, armas(Arma, nivelManejo))
+
+viajero(legolas, guerrero(elfo, ([(arco, 29), (espada, 20)]))).
+viajero(gimli, guerrero(enano, ([hacha, 26]))).
+viajero(aragorn, guerrero(dunedain, ([espada, 30]))).
+viajero(boromir, guerrero(hombre, ([espada, 26]))).
+viajero(gorbag, guerrero(orco, ([ballesta, 24]))).
+viajero(ugluk, guerrero(urukhai, ([(espada, 26), (arco,22)]))).
+
+% TIPO: pacifista(raza, edad)
+
+viajero(frodo, pacifista(hobbit, 51)).
+viajero(sam, pacifista(hobbit, 36)).
+viajero(barbol, pacifista(ent, 5300)).
+
+% Punto 9
+
+% raza(viajero, suRaza)
+
+%raza(gandalf, maiar).
+%raza(legolas, elfo).
+%raza(gimli, enano).
+%raza(aragorn, dunedain).
+%raza(boromir, hombre).
+%raza(gorbag, orco).
+%raza(ugluk, urukhai).
+%raza(frodo, hobbit).
+%raza(sam, hobbit).
+%raza(barbol, ent).
+
+raza(Viajero, Raza):-
+    viajero(Viajero, _, (Raza, _)).
+
+% arma(viajero, suArma)
+
+arma(gandalf, baston).
+arma(legolas, arco).
+arma(legolas, espada).
+arma(gimli, hacha).
+arma(aragorn, espada).
+arma(boromir, espada).
+arma(gorbag, ballesta).
+arma(ugluk, espada).
+arma(ugluk, arco).
+arma(frodo, espadaCorta).
+arma(sam, daga).
+arma(barbol, fuerza).
+
+% nivel(viajero, suNivel)
+
+%nivel(gandalf, 25).
+%nivel(legolas, 29).
+%nivel(gimli, 26).
+%nivel(aragorn, 30).
+%nivel(boromir, 26).
+%nivel(gorbag, 24).
+%nivel(ugluk, 26).
+
+nivel(Viajero, Nivel):-
+    viajero(Viajero, pacifista(hobbit, Edad)),
+    Nivel is Edad / 3.
+
+nivel(Viajero, Nivel):-
+    viajero(Viajero, pacifista(ent, Edad)),
+    Nivel is Edad / 100.
+

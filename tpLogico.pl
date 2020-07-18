@@ -145,7 +145,7 @@ armas(Nombre, Armas) :-
     viajero(Nombre, _, armas(Armas)).
     
 nivel(Nombre, Nivel) :-
-    viajero(gandalf, maiar(Nivel, 260), _).
+    viajero(Nombre, maiar(Nivel, _), _).
 
 nivel(Nombre, Nivel) :-
     viajero(Nombre, pacifista(hobbit(Edad)), _),

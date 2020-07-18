@@ -117,18 +117,18 @@ todosLosCaminosConducenAMordor([Camino]):-
 % Raza: hobbit(edad)
 % Raza: ent(edad)
 
-viajero(gandalf,    maiar(25, 260), armas(  [baston                 ]   )).
+viajero(gandalf,    maiar(25, 260),         armas(  [baston                 ]   )).
 
-viajero(legolas,    elfo,           armas(  [arco(29), espada(20)   ]   )).
-viajero(gimli,      enano,          armas(  [hacha(26)              ]   )).
-viajero(aragorn,    dunedain,       armas(  [espada(30)             ]   )).
-viajero(boromir,    hombre,         armas(  [espada(26)             ]   )).
-viajero(gorbag,     orco,           armas(  [ballesta(24)           ]   )).
-viajero(ugluk,      urukhai,        armas(  [espada(26), arco(22)   ]   )).
+viajero(legolas,    guerrero(elfo),         armas(  [arco(29), espada(20)   ]   )).
+viajero(gimli,      guerrero(enano),        armas(  [hacha(26)              ]   )).
+viajero(aragorn,    guerrero(dunedain),     armas(  [espada(30)             ]   )).
+viajero(boromir,    guerrero(hombre),       armas(  [espada(26)             ]   )).
+viajero(gorbag,     guerrero(orco),         armas(  [ballesta(24)           ]   )).
+viajero(ugluk,      guerrero(urukhai),      armas(  [espada(26), arco(22)   ]   )).
 
-viajero(frodo,      hobbit(51),     armas(  [espadaCorta            ]   )).
-viajero(sam,        hobbit(36),     armas(  [daga                   ]   )).
-viajero(barbol,     ent(5300),      armas(  [fuerza                 ]   )).
+viajero(frodo,      pacifista(hobbit(51)),  armas(  [espadaCorta            ]   )).
+viajero(sam,        pacifista(hobbit(36)),  armas(  [daga                   ]   )).
+viajero(barbol,     pacifista(ent(5300)),   armas(  [fuerza                 ]   )).
 
 % Punto 9
 
@@ -136,25 +136,20 @@ raza(Nombre, Tipo) :-
     viajero(Nombre, Raza, _),
     tipoDeRaza(Raza, Tipo).
 
-tipoDeRaza(elfo,        guerrera).
-tipoDeRaza(enano,       guerrera).
-tipoDeRaza(dunedain,    guerrera).
-tipoDeRaza(hombre,      guerrera).
-tipoDeRaza(orco,        guerrera).
-tipoDeRaza(urukhai,     guerrera).
+tipoDeRaza(guerrero(_), guerrera).
 tipoDeRaza(maiar(_,_),  maiar).
-tipoDeRaza(hobbit(_),   pacifista).
-tipoDeRaza(ent(_),      pacifista).
+tipoDeRaza(pacifista(_),   pacifista).
+
 
 armas(Nombre, Armas) :-
     viajero(Nombre, _, armas(Armas)).
 
 nivel(Nombre, Nivel) :-
-    viajero(Nombre, hobbit(Edad), _),
+    viajero(Nombre, pacifista(hobbit(Edad)), _),
     Nivel is Edad / 3.
 
 nivel(Nombre, Nivel) :-
-    viajero(Nombre, ent(Edad), _),
+    viajero(Nombre, pacifista(ent(Edad)), _),
     Nivel is Edad / 100.
 
 nivel(Nombre, Nivel) :-

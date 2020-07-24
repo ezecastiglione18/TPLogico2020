@@ -13,6 +13,12 @@ zona(minasTirith, gondor).
 zona(minasMorgul, mordor).
 zona(monteDelDestino, mordor).
 
+esZona(Zona):-
+    zona(Zona, _).
+
+esRegion(Region):-
+    zona(_, Region).
+
 %camino(lista de zonas)
 
 camino([comarca, rivendel, moria, lothlorien, edoras, minasTirith, minasMorgul, monteDelDestino]).
@@ -46,8 +52,8 @@ regionesLimitrofes(UnaRegion,OtraRegion):-
     UnaRegion \= OtraRegion.
 
 regionesLejanas(UnaRegion,OtraRegion):-
-    zona(_,UnaRegion),
-    zona(_,OtraRegion),
+    esRegion(UnaRegion),
+    esRegion(OtraRegion),
     not(regionesLimitrofes(UnaRegion,OtraRegion)),
     not(hayRegionLimitrofeEntre(UnaRegion,OtraRegion)).
 
@@ -58,16 +64,21 @@ hayRegionLimitrofeEntre(UnaRegion,OtraRegion):-
 %Punto5
 
 puedeSeguirCon(UnCamino,UnaZona):-
+    esCamino(UnCamino),
     last(UnCamino,UltimaZona),
     sonZonasLimitrofes(UnaZona,UltimaZona).
 
 sonConsecutivos(UnCamino,OtroCamino):-
+    esCamino(UnCamino),
     nth1(1,OtroCamino,UnaZona),
     puedeSeguirCon(UnCamino,UnaZona).
+
+esCamino(UnCamino):-    camino(UnCamino).
 
 % Punto 6
 
 tieneLogica([Zona, ZonaSiguiente|RestoDeZonas]):-
+    esZona(Zona),
     sonZonasLimitrofes(Zona, ZonaSiguiente),
     tieneLogica([ZonaSiguiente|RestoDeZonas]).
 
@@ -93,6 +104,7 @@ cambiaDeRegion(UnaZona, OtraZona):-
 % Punto 7
 
 cantidadDeRegiones(Camino, Cantidad):-
+    esCamino(Camino),
     findall(Region, regionDe(Camino, Region), Regiones),
     list_to_set(Regiones, RegionesSinRepetidos),
     length(RegionesSinRepetidos, Cantidad).

@@ -85,21 +85,19 @@ tieneLogica([Zona, ZonaSiguiente|RestoDeZonas]):-
 tieneLogica([Zona, ZonaSiguiente]):-
     sonZonasLimitrofes(Zona, ZonaSiguiente).
 
-esSeguro([Zona, ZonaSiguiente|RestoDeZonas]):-
-    cambiaDeRegion(Zona, ZonaSiguiente),
-    esSeguro(RestoDeZonas).
+esSeguro(Camino):-
+    esCamino(Camino),
+    not(tiene3ZonasSeguidas(Camino)).
 
-esSeguro([_, Zona, ZonaSiguiente|RestoDeZonas]):-
-    cambiaDeRegion(Zona, ZonaSiguiente),
-    esSeguro(RestoDeZonas).
+tiene3ZonasSeguidas(Camino):-
+    member(Zona1, Camino),
+    member(Zona2, Camino),
+    forall((member(Zona3, Camino), Zona3 \= Zona1, Zona3 \= Zona2), sonSeguidas(Zona1, Zona2, Zona3)),
+    Zona1 \= Zona2.
 
-esSeguro([Zona, ZonaSiguiente]):-
-    cambiaDeRegion(Zona, ZonaSiguiente).
+sonSeguidas(Zona1, Zona2, Zona3):-
+    sonZonasLimitrofes(Zona1, Zona2), sonZonasLimitrofes(Zona2, Zona3), sonZonasLimitrofes(Zona1, Zona3).
 
-cambiaDeRegion(UnaZona, OtraZona):-
-    zona(UnaZona,UnaRegion),
-    zona(OtraZona,OtraRegion),
-    UnaRegion \= OtraRegion.
 
 % Punto 7
 
@@ -113,14 +111,13 @@ regionDe(Camino, Region):-
     member(Zona, Camino),
     zona(Zona, Region).
 
- todosLosCaminosConducenAMordor([Camino|Resto]):-
-    last(Camino, UltimaZona),
-    zona(UltimaZona, mordor),
-    todosLosCaminosConducenAMordor(Resto).
+todosLosCaminosConducenAMordor(ListaCaminos):-
+    forall(member(Camino, ListaCaminos), terminaEn(Camino, mordor)).
 
-todosLosCaminosConducenAMordor([Camino]):-
-    last(Camino, UltimaZona),
-    zona(UltimaZona, mordor).
+terminaEn(Camino, Region):-
+    last(UltimaZona, Camino),
+    zona(UltimaZona, Region).
+
 
 % Punto 8
 

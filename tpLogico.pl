@@ -182,64 +182,58 @@ nivelDelArma(hacha(Nivel), Nivel).
 nivelDelArma(espada(Nivel), Nivel).
 nivelDelArma(ballesta(Nivel), Nivel).
 
+
 % Punto 10
 
-requisitosDeRaza(_,ListaDeViajeros,NivelRaza,TipoRaza) :-
- member(Viajero,ListaDeViajeros),
- raza(Viajero,TipoRaza),
+%          Raza  Zona  NivelMinimo
+integrante(maiar,moria,24).
+integrante(maiar,isengard,27).
+integrante(elfo,isengard,30).
+
+%         Item       Zona CantidadMinima
+elemento(cotaDeMalla,moria,1).
+
+%     Raza Zona PoderMinimo
+magia(enano,moria,50).
+
+cumpleAlgunRequerimiento(Viajero,Zona) :-
+ raza(Viajero,Raza),
  nivel(Viajero,Nivel),
- Nivel >= NivelRaza.
+ integrante(Raza,Zona,NivelMinimo),
+ Nivel >= NivelMinimo.
 
-requisitosDeElementos(_,ListaDeViajeros,ArmaRequerida,CantidadRequerida) :-
- findall(ArmaRequerida,tienenArma(ListaDeViajeros,ArmaRequerida),ArmasViajeros),
- length(ArmasViajeros,CantidadDeArmas),
- CantidadDeArmas >= CantidadRequerida.
+cumpleAlgunRequerimiento(Viajero,Zona) :-
+ elemento(Item,Zona,CantidadMinima),
+ findall(_,tieneArma(Viajero,Item),Armas),
+ length(Armas,CantidadDeArmas),
+ CantidadDeArmas >= CantidadMinima.
 
-tienenArma(ListaDeViajeros,Arma) :-
- member(Viajero,ListaDeViajeros),
- tieneArma(Viajero,Arma).
+cumpleAlgunRequerimiento(Viajero,Zona) :-
+ raza(Viajero,Raza),
+ poder(Viajero,Poder),
+ magia(Raza,Zona,PoderMinimo),
+ Poder >= PoderMinimo.
 
 tieneArma(Viajero,Arma) :-
  viajero(Viajero,_,armas(ListaDeArmas)),
  member(Arma,ListaDeArmas).
 
-
-requisitosDeMagia(_,ListaDeViajeros,PoderMagicoMinimo) :-
- findall(PoderMagico,poderes(ListaDeViajeros,PoderMagico),PoderesMagicos),
- sumlist(PoderesMagicos,SumaPoderMagico),
- SumaPoderMagico >= PoderMagicoMinimo.
-
-poderes(ListaDeViajeros,PoderMagico) :-
- member(Viajero,ListaDeViajeros),
- poder(Viajero,PoderMagico).
-
-poder(Viajero,PoderMagico) :-
+poder(Viajero,Poder) :-
  raza(Viajero,elfo),
  nivel(Viajero,Nivel),
- PoderMagico is Nivel*2.
+ Poder is Nivel * 2.
 poder(Viajero,Nivel) :-
- raza(Viajero,enano),
+ raza(Viajero, dunedain),
  nivel(Viajero,Nivel).
 poder(Viajero,Nivel) :-
- raza(Viajero,dunedain),
- nivel(Viajero,Nivel).
+ raza(Viajero, enano),
+ nivel(Viajero, Nivel).
 
-puedeAtravesar(moria,ListaDeViajeros) :-
- requisitosDeRaza(moria,ListaDeViajeros,24,maiar).
-puedeAtravesar(isengard,ListaDeViajeros) :-
- requisitosDeRaza(isengard,ListaDeViajeros,27,maiar).
-puedeAtravesar(isengard,ListaDeViajeros) :-
- requisitosDeRaza(isengard,ListaDeViajeros,30,elfo).
-puedeAtravesar(moria,ListaDeViajeros) :-
- requisitosDeElementos(moria,ListaDeViajeros,cotaDeMalla,1).
-puedeAtravesar(moria,ListaDeViajeros) :-
- requisitosDeElementos(moria,ListaDeViajeros,panDeLembas,2).
-%puedeAtravesar(Zona,ListaDeViajeros) :-
- %requisitosDeRaza(Zona,ListaDeViajeros,_,_),
- %requisitosDeElementos(Zona,ListaDeViajeros,_,_),
- %requisitosDeMagia(Zona,ListaDeViajeros,_).
+puedeAtravesar(Zona,ListaDeViajeros) :-
+ esZona(Zona),
+ forall(member(Viajero,ListaDeViajeros),cumpleAlgunRequerimiento(Viajero,Zona)).
 
 % Punto 11
-seSienteComoEnCasa(ListaDeViajeros,Region) :-
+seSienteComoEnCasa(ListaDeViajeros,Region):-
  zona(_,Region),
  forall(zona(Zona,Region),puedeAtravesar(Zona,ListaDeViajeros)).

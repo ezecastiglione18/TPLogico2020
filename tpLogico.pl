@@ -121,23 +121,22 @@ terminaEn(Camino, Region):-
 
 % Punto 8
 
-% viajero(Nombre, Raza, armas([arma(nivel)])
-% Raza: maiar(nivel, nivelMagico)
-% Raza: hobbit(edad)
-% Raza: ent(edad)
+% viajero(Nombre, maiar(Nivel), NivelMagico)
+% viajero(Nombre, CualquierGuerrero, armas([arma(nivel)])
+% viajero(Nombre, hobbit/Ent, Edad)
 
-viajero(gandalf,    maiar(25, 260),         armas(  [baston                 ]   )).
+viajero(gandalf,    maiar(25), 260).
 
-viajero(legolas,    guerrero(elfo),         armas(  [arco(29), espada(20)   ]   )).
-viajero(gimli,      guerrero(enano),        armas(  [hacha(26)              ]   )).
-viajero(aragorn,    guerrero(dunedain),     armas(  [espada(30)             ]   )).
-viajero(boromir,    guerrero(hombre),       armas(  [espada(26)             ]   )).
-viajero(gorbag,     guerrero(orco),         armas(  [ballesta(24)           ]   )).
-viajero(ugluk,      guerrero(urukhai),      armas(  [espada(26), arco(22)   ]   )).
+viajero(legolas,    elfo,     armas( [arco(29), espada(20)   ] )).
+viajero(gimli,      enano,    armas( [hacha(26)              ] )).
+viajero(aragorn,    dunedain, armas( [espada(30)             ] )).
+viajero(boromir,    hombre,   armas( [espada(26)             ] )).
+viajero(gorbag,     orco,     armas( [ballesta(24)           ] )).
+viajero(ugluk,      urukhai,  armas( [espada(26), arco(22)   ] )).
 
-viajero(frodo,      pacifista(hobbit(51)),  armas(  [espadaCorta            ]   )).
-viajero(sam,        pacifista(hobbit(36)),  armas(  [daga                   ]   )).
-viajero(barbol,     pacifista(ent(5300)),   armas(  [fuerza                 ]   )).
+viajero(frodo, hobbit, 51).
+viajero(sam, hobbit, 36).
+viajero(barbol, ent, 5300).
 
 % Punto 9
 
@@ -145,26 +144,51 @@ raza(Nombre, Tipo) :-
     viajero(Nombre, Raza, _),
     tipoDeRaza(Raza, Tipo).
 
-tipoDeRaza(guerrero(_), guerrera).
-tipoDeRaza(guerrero(elfo),   elfo).
-tipoDeRaza(guerrero(enano),   enano).
-tipoDeRaza(guerrero(dunedain),   dunedain).
-tipoDeRaza(maiar(_,_),  maiar).
-tipoDeRaza(pacifista(_),   pacifista).
+tipoDeRaza(Raza, guerrera) :-
+    guerrero(Raza).
 
+tipoDeRaza(maiar(_, _), maiar).
+
+tipoDeRaza(Raza, pacifista) :-
+    pacifista(Raza).
+
+guerrero(enano).
+guerrero(dunedain).
+guerrero(hombre).
+guerrero(orco).
+guerrero(urukhai).
+pacifista(hobbit).
+pacifista(ent).
+
+armas(Nombre, baston) :-
+    raza(Nombre, maiar).
 
 armas(Nombre, Armas) :-
+    raza(Nombre, guerrera),
     viajero(Nombre, _, armas(Armas)).
+
+armas(Nombre, Arma) :-
+    viajero(Nombre, hobbit, Edad),
+    armaPorEdad(Arma, Edad).
+
+armaPorEdad(daga, Edad) :-
+    Edad<50.
+
+armaPorEdad(espadaCorta, Edad) :-
+    Edad>=50.
+
+armas(Nombre, fuerza) :-
+    viajero(Nombre, ent, _).
     
 nivel(Nombre, Nivel) :-
-    viajero(Nombre, maiar(Nivel, _), _).
+    viajero(Nombre, maiar(Nivel), _).
 
 nivel(Nombre, Nivel) :-
-    viajero(Nombre, pacifista(hobbit(Edad)), _),
+    viajero(Nombre, hobbit, Edad),
     Nivel is Edad / 3.
 
 nivel(Nombre, Nivel) :-
-    viajero(Nombre, pacifista(ent(Edad)), _),
+    viajero(Nombre, ent, Edad),
     Nivel is Edad / 100.
 
 nivel(Nombre, Nivel) :-
@@ -182,58 +206,59 @@ nivelDelArma(hacha(Nivel), Nivel).
 nivelDelArma(espada(Nivel), Nivel).
 nivelDelArma(ballesta(Nivel), Nivel).
 
-
 % Punto 10
 
 %          Raza  Zona  NivelMinimo
-integrante(maiar,moria,24).
-integrante(maiar,isengard,27).
-integrante(elfo,isengard,30).
+integrante(maiar, moria, 24).
+integrante(maiar, isengard, 27).
+integrante(elfo, isengard, 30).
 
 %         Item       Zona CantidadMinima
-elemento(cotaDeMalla,moria,1).
+elemento(cotaDeMalla, moria, 1).
 
 %     Raza Zona PoderMinimo
-magia(enano,moria,50).
+magia(enano, moria, 50).
 
-cumpleAlgunRequerimiento(Viajero,Zona) :-
- raza(Viajero,Raza),
- nivel(Viajero,Nivel),
- integrante(Raza,Zona,NivelMinimo),
- Nivel >= NivelMinimo.
+cumpleAlgunRequerimiento(Viajero, Zona) :-
+    raza(Viajero, Raza),
+    nivel(Viajero, Nivel),
+    integrante(Raza, Zona, NivelMinimo),
+    Nivel >= NivelMinimo.
 
-cumpleAlgunRequerimiento(Viajero,Zona) :-
- elemento(Item,Zona,CantidadMinima),
- findall(_,tieneArma(Viajero,Item),Armas),
- length(Armas,CantidadDeArmas),
- CantidadDeArmas >= CantidadMinima.
+cumpleAlgunRequerimiento(Viajero, Zona) :-
+    elemento(Item, Zona, CantidadMinima),
+    findall(_, tieneArma(Viajero, Item), Armas),
+    length(Armas, CantidadDeArmas),
+    CantidadDeArmas >= CantidadMinima.
 
-cumpleAlgunRequerimiento(Viajero,Zona) :-
- raza(Viajero,Raza),
- poder(Viajero,Poder),
- magia(Raza,Zona,PoderMinimo),
- Poder >= PoderMinimo.
+cumpleAlgunRequerimiento(Viajero, Zona) :-
+    raza(Viajero, Raza),
+    poder(Viajero, Poder),
+    magia(Raza, Zona, PoderMinimo),
+    Poder >= PoderMinimo.
 
-tieneArma(Viajero,Arma) :-
- viajero(Viajero,_,armas(ListaDeArmas)),
- member(Arma,ListaDeArmas).
+tieneArma(Viajero, Arma) :-
+    viajero(Viajero, _, armas(ListaDeArmas)),
+    member(Arma, ListaDeArmas).
 
-poder(Viajero,Poder) :-
- raza(Viajero,elfo),
- nivel(Viajero,Nivel),
- Poder is Nivel * 2.
-poder(Viajero,Nivel) :-
- raza(Viajero, dunedain),
- nivel(Viajero,Nivel).
-poder(Viajero,Nivel) :-
- raza(Viajero, enano),
- nivel(Viajero, Nivel).
+poder(Viajero, Poder) :-
+    raza(Viajero, elfo),
+    nivel(Viajero, Nivel),
+    Poder is Nivel * 2.
 
-puedeAtravesar(Zona,ListaDeViajeros) :-
- esZona(Zona),
- forall(member(Viajero,ListaDeViajeros),cumpleAlgunRequerimiento(Viajero,Zona)).
+poder(Viajero, Nivel) :-
+    raza(Viajero, dunedain),
+    nivel(Viajero, Nivel).
+
+poder(Viajero, Nivel) :-
+    raza(Viajero, enano),
+    nivel(Viajero, Nivel).
+
+puedeAtravesar(Zona, ListaDeViajeros) :-
+    esZona(Zona),
+    forall(member(Viajero, ListaDeViajeros), cumpleAlgunRequerimiento(Viajero, Zona)).
 
 % Punto 11
-seSienteComoEnCasa(ListaDeViajeros,Region):-
- zona(_,Region),
- forall(zona(Zona,Region),puedeAtravesar(Zona,ListaDeViajeros)).
+seSienteComoEnCasa(ListaDeViajeros, Region):-
+    zona(_, Region),
+    forall(zona(Zona, Region), puedeAtravesar(Zona, ListaDeViajeros)).
